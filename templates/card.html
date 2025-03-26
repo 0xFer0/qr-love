@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Love Card</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pink-light: #ff99b3;
+            --pink-dark: #ff6680;
+            --shadow: rgba(0, 0, 0, 0.15);
+            --glow: rgba(255, 153, 179, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(to bottom, #fff0f5, #ffebf2);
+            font-family: 'Comic Neue', cursive;
+            text-align: center;
+            overflow-x: hidden;
+            padding: 10px;
+            direction: rtl;
+            overscroll-behavior: none;
+        }
+
+        .password-container,
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 15px;
+        }
+
+        .password-container {
+            display: none; /* Assuming no password for this example */
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .password-container h2,
+        h1 {
+            font-family: 'Patrick Hand', cursive;
+            font-size: clamp(16px, 5vw, 32px);
+            color: var(--pink-light);
+            text-shadow: 0 0 6px var(--glow);
+            margin-bottom: 10px;
+        }
+
+        .password-container input {
+            font-family: 'Comic Neue', cursive;
+            font-size: clamp(14px, 4vw, 20px);
+            padding: 8px;
+            border: 2px solid var(--pink-light);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 250px;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .password-container input:focus {
+            border-color: var(--pink-dark);
+        }
+
+        .btn {
+            font-family: 'Patrick Hand', cursive;
+            font-size: clamp(14px, 4vw, 24px);
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 2px 6px var(--shadow);
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .password-container button {
+            color: #fff;
+            background: var(--pink-light);
+            border: none;
+        }
+
+        .password-container button:hover {
+            background: var(--pink-dark);
+            transform: scale(1.03);
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px; /* Increased for better spacing */
+        }
+
+        .button-wrapper {
+            position: relative;
+            display: inline-block; /* Changed to inline-block for RTL */
+            text-align: center;
+        }
+
+        .envelope-btn {
+            color: var(--pink-light);
+            background: #fff;
+            border: 2px solid var(--pink-light);
+            padding: clamp(6px, 2vw, 12px) clamp(12px, 3vw, 20px);
+            animation: pulse 1.5s infinite;
+        }
+
+        .envelope-btn:hover {
+            background: var(--pink-light);
+            color: #fff;
+        }
+
+        .sparkle { 
+            position: absolute; 
+            font-size: clamp(10px, 2vw, 16px);
+            color: #ffccde;
+            animation: twinkle 1.5s infinite; 
+        }
+        .sparkle:nth-child(1) { top: -5px; right: -10px; animation-delay: 0s; } /* Swapped left/right for RTL */
+        .sparkle:nth-child(2) { top: -5px; left: -10px; animation-delay: 0.5s; } /* Swapped left/right for RTL */
+
+        .click-hint {
+            display: block;
+            margin-top: 5px;
+            font-size: clamp(12px, 3vw, 16px);
+            color: var(--pink-light);
+            font-family: 'Comic Neue', cursive;
+            animation: bounce 1.5s infinite;
+            text-shadow: 0 0 4px var(--glow);
+            white-space: nowrap;
+        }
+
+        .note {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: clamp(10px, 3vw, 20px);
+            background: linear-gradient(to bottom, #fff, #fff5f7);
+            border: 2px dashed var(--pink-light);
+            border-radius: 15px;
+            box-shadow: 0 4px 10px var(--shadow);
+            font-size: clamp(14px, 4vw, 20px);
+            color: #333;
+            line-height: 1.5;
+            width: 90%;
+            max-width: 300px;
+            max-height: 80vh;
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+            touch-action: none;
+            user-select: none;
+            z-index: 10;
+        }
+
+        .note.visible {
+            opacity: 1;
+            visibility: visible;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .note span {
+            color: var(--pink-light);
+            font-weight: 700;
+        }
+
+        .confetti,
+        .heart {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .confetti { animation: burst 1s ease-out forwards; }
+        .heart { animation: float 5s infinite ease-in-out; }
+
+        @media (max-width: 400px) {
+            body { padding: 5px; }
+            .password-container, .container { padding: 10px; }
+            .note { width: 95%; max-width: 280px; }
+            h1 { font-size: clamp(14px, 4.5vw, 28px); }
+            .click-hint { font-size: clamp(10px, 2.5vw, 14px); margin-top: 3px; }
+        }
+
+        @keyframes wave { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(15deg); } }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        @keyframes burst { 
+            0% { opacity: 1; transform: translate(0, 0) scale(1); } 
+            100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(1.5); } 
+        }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translate(-50%, -60%); } 
+            to { opacity: 1; transform: translate(-50%, -50%); } 
+        }
+        @keyframes float { 
+            0% { transform: translateY(100vh); opacity: 0; } 
+            50% { opacity: 0.6; } 
+            100% { transform: translateY(-20vh); opacity: 0; } 
+        }
+    </style>
+</head>
+<body>
+    <div class="password-container" id="passwordSection">
+        <h2>آسف، هذا لـ سلمان فقط! 💕</h2>
+        <input type="password" id="passwordInput" placeholder="أدخل كلمة المرور" autocomplete="off">
+        <button class="btn" onclick="checkPassword()">إرسال</button>
+    </div>
+
+    <div class="container" id="content">
+        <span class="click-hint">↓ انقر هنا! ↓</span> <!-- Changed to Arabic for consistency -->
+
+        <div class="button-wrapper">
+            <button class="btn envelope-btn" onclick="showNote()">لك!</button>
+            <span class="sparkle">✨</span>
+            <span class="sparkle">✨</span>
+        </div>
+        <h1>يا سلمان ❤️ 
+            <span class="teddy">🧸</span>
+            <span class="heart-spin">💞</span>
+        </h1>
+    </div>
+
+    <div class="note" id="note">
+        💌 <span>"{{ card.message }}"</span>
+    </div>
+
+    <script>
+        'use strict';
+
+        const state = {
+            correctPassword: "{{ card.password }}",
+            attempts: 3,
+            isDragging: false,
+            currentX: 0,
+            currentY: 0,
+            initialX: 0,
+            initialY: 0
+        };
+
+        const elements = {
+            passwordSection: document.getElementById('passwordSection'),
+            passwordInput: document.getElementById('passwordInput'),
+            content: document.getElementById('content'),
+            note: document.getElementById('note')
+        };
+
+        function checkPassword() {
+            const input = elements.passwordInput.value.trim();
+            if (input === state.correctPassword) {
+                elements.passwordSection.style.display = 'none';
+                elements.content.style.display = 'flex';
+                return;
+            }
+
+            state.attempts--;
+            if (state.attempts > 0) {
+                alert(`كلمة مرور خاطئة! المحاولات المتبقية: ${state.attempts}`);
+                elements.passwordInput.value = '';
+            } else {
+                document.body.innerHTML = `<h1 style="color: var(--pink-light); text-align: center; padding: 20px;">
+                    آسف، هذا لـ سلمان فقط! 💕
+                </h1>`;
+            }
+        }
+
+        function showNote() {
+            elements.note.classList.toggle('visible');
+            if (elements.note.classList.contains('visible')) {
+                createConfetti();
+            }
+        }
+
+        function createConfetti() {
+            const btn = document.querySelector('.envelope-btn');
+            const rect = btn.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const confettiTypes = ['⭐', '💖', '🌟', '✨', '🌸', '💕', '🌼'];
+
+            for (let i = 0; i < 10; i++) {
+                const confetti = Object.assign(document.createElement('div'), {
+                    className: 'confetti',
+                    innerHTML: confettiTypes[Math.floor(Math.random() * confettiTypes.length)],
+                    style: `
+                        left: ${centerX}px;
+                        top: ${centerY}px;
+                        --x: ${(Math.random() - 0.5) * 50}px;
+                        --y: ${(Math.random() - 0.5) * 50}px;
+                    `
+                });
+                document.body.appendChild(confetti);
+                confetti.addEventListener('animationend', () => confetti.remove());
+            }
+        }
+
+        function createHeart() {
+            const heart = Object.assign(document.createElement('div'), {
+                className: 'heart',
+                innerHTML: Math.random() > 0.5 ? '❤️' : '💖',
+                style: `
+                    left: ${Math.random() * 100}vw;
+                    animation-duration: ${Math.random() * 2 + 3}s;
+                `
+            });
+            document.body.appendChild(heart);
+            heart.addEventListener('animationend', () => heart.remove());
+        }
+
+        function clamp(value, min, max) {
+            return Math.min(Math.max(value, min), max);
+        }
+
+        function startDragging(e) {
+            if (!elements.note.classList.contains('visible')) return;
+            state.isDragging = true;
+            const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+            state.initialX = clientX - state.currentX;
+            state.initialY = clientY - state.currentY;
+            elements.note.style.transition = 'none';
+        }
+
+        function drag(e) {
+            if (!state.isDragging) return;
+            e.preventDefault();
+            const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+            state.currentX = clamp(clientX - state.initialX, 0, window.innerWidth - elements.note.offsetWidth);
+            state.currentY = clamp(clientY - state.initialY, 0, window.innerHeight - elements.note.offsetHeight);
+            elements.note.style.left = `${state.currentX}px`;
+            elements.note.style.top = `${state.currentY}px`;
+            elements.note.style.transform = 'none';
+        }
+
+        function stopDragging() {
+            state.isDragging = false;
+            elements.note.style.transition = 'opacity 0.3s ease';
+        }
+
+        // Event Listeners
+        elements.passwordInput?.addEventListener('keypress', (e) => e.key === 'Enter' && checkPassword());
+        elements.note.addEventListener('mousedown', startDragging);
+        elements.note.addEventListener('touchstart', startDragging);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('touchmove', drag, { passive: false });
+        document.addEventListener('mouseup', stopDragging);
+        document.addEventListener('touchend', stopDragging);
+
+        // Initialize
+        setInterval(createHeart, 600);
+        elements.note.style.left = '50%';
+        elements.note.style.top = '50%';
+        elements.note.style.transform = 'translate(-50%, -50%)';
+    </script>
+</body>
+</html>
