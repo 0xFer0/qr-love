@@ -4,6 +4,7 @@ import psycopg2.extras
 import random
 import os
 from urllib.parse import urlparse
+import string
 
 app = Flask(__name__)
 
@@ -25,7 +26,7 @@ def init_db():
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute("""
         CREATE TABLE IF NOT EXISTS cards (
-            id SERIAL PRIMARY KEY,
+            id VARCHAR(255) PRIMARY KEY,  -- Changed from SERIAL to VARCHAR
             name TEXT NOT NULL,
             language TEXT NOT NULL,
             password TEXT,
@@ -169,15 +170,16 @@ def creator():
                 'button_text': 'For You!' if request.form['language'] == 'en' else 'لك!'
             }
             
+            # Generate a unique string ID
+            card_id = generate_unique_id()
+            
             conn = get_db_connection()
             cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
             cur.execute("""
-                INSERT INTO cards (name, language, password, message, button_text)
-                VALUES (%s, %s, %s, %s, %s)
-                RETURNING id
-            """, (card_data['name'], card_data['language'], card_data['password'], 
+                INSERT INTO cards (id, name, language, password, message, button_text)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (card_id, card_data['name'], card_data['language'], card_data['password'], 
                   card_data['message'], card_data['button_text']))
-            card_id = cur.fetchone()['id']
             conn.commit()
             cur.close()
             conn.close()
@@ -188,19 +190,14 @@ def creator():
             return jsonify({'error': str(e), 'success': False}), 500
     
     return render_template('index.html', messages=MESSAGES, language=language)
-import uuid
-import random
-import string
 
 # Function to generate a unique ID (e.g., 4hf5#4)
 def generate_unique_id():
-    # Example format: 4 characters + # + 1 character
     letters = string.ascii_lowercase + string.digits
     part1 = ''.join(random.choice(letters) for _ in range(4))
     part2 = random.choice(letters)
     return f"{part1}#{part2}"
 
-# Modified route to accept string IDs instead of integers
 @app.route('/card/<string:id>')
 def card(id):
     try:
