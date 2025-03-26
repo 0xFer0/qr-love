@@ -188,8 +188,20 @@ def creator():
             return jsonify({'error': str(e), 'success': False}), 500
     
     return render_template('index.html', messages=MESSAGES, language=language)
+import uuid
+import random
+import string
 
-@app.route('/card/<int:id>')
+# Function to generate a unique ID (e.g., 4hf5#4)
+def generate_unique_id():
+    # Example format: 4 characters + # + 1 character
+    letters = string.ascii_lowercase + string.digits
+    part1 = ''.join(random.choice(letters) for _ in range(4))
+    part2 = random.choice(letters)
+    return f"{part1}#{part2}"
+
+# Modified route to accept string IDs instead of integers
+@app.route('/card/<string:id>')
 def card(id):
     try:
         conn = get_db_connection()
