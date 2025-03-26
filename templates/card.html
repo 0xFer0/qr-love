@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="{{ card.language }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -31,7 +31,7 @@
             text-align: center;
             overflow-x: hidden;
             padding: 10px;
-            direction: rtl;
+            direction: {{ 'rtl' if card.language == 'ar' else 'ltr' }};
             overscroll-behavior: none;
         }
 
@@ -43,7 +43,7 @@
         }
 
         .password-container {
-            display: none; /* Assuming no password for this example */
+            display: {{ 'none' if not card.password else 'flex' }};
             flex-direction: column;
             align-items: center;
             gap: 12px;
@@ -97,16 +97,18 @@
         }
 
         .container {
+            display: {{ 'block' if not card.password else 'none' }};
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px; /* Increased for better spacing */
+            gap: 15px;
         }
 
         .button-wrapper {
             position: relative;
-            display: inline-block; /* Changed to inline-block for RTL */
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            width: 100%;
         }
 
         .envelope-btn {
@@ -115,6 +117,7 @@
             border: 2px solid var(--pink-light);
             padding: clamp(6px, 2vw, 12px) clamp(12px, 3vw, 20px);
             animation: pulse 1.5s infinite;
+            width: fit-content;
         }
 
         .envelope-btn:hover {
@@ -122,18 +125,22 @@
             color: #fff;
         }
 
+        .teddy { animation: wave 1.5s infinite; }
+        .heart-spin { animation: spin 2s infinite linear; }
         .sparkle { 
             position: absolute; 
             font-size: clamp(10px, 2vw, 16px);
             color: #ffccde;
             animation: twinkle 1.5s infinite; 
         }
-        .sparkle:nth-child(1) { top: -5px; right: -10px; animation-delay: 0s; } /* Swapped left/right for RTL */
-        .sparkle:nth-child(2) { top: -5px; left: -10px; animation-delay: 0.5s; } /* Swapped left/right for RTL */
+        .sparkle:nth-child(1) { top: -5px; left: -10px; animation-delay: 0s; }
+        .sparkle:nth-child(2) { top: -5px; right: -10px; animation-delay: 0.5s; }
 
         .click-hint {
-            display: block;
-            margin-top: 5px;
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            transform: translateX(-50%);
             font-size: clamp(12px, 3vw, 16px);
             color: var(--pink-light);
             font-family: 'Comic Neue', cursive;
@@ -192,14 +199,14 @@
             .password-container, .container { padding: 10px; }
             .note { width: 95%; max-width: 280px; }
             h1 { font-size: clamp(14px, 4.5vw, 28px); }
-            .click-hint { font-size: clamp(10px, 2.5vw, 14px); margin-top: 3px; }
+            .click-hint { bottom: -16px; font-size: clamp(10px, 2.5vw, 14px); }
         }
 
         @keyframes wave { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(15deg); } }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
         @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        @keyframes bounce { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-5px); } }
         @keyframes burst { 
             0% { opacity: 1; transform: translate(0, 0) scale(1); } 
             100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(1.5); } 
@@ -217,20 +224,19 @@
 </head>
 <body>
     <div class="password-container" id="passwordSection">
-        <h2>آسف، هذا لـ سلمان فقط! 💕</h2>
-        <input type="password" id="passwordInput" placeholder="أدخل كلمة المرور" autocomplete="off">
-        <button class="btn" onclick="checkPassword()">إرسال</button>
+        <h2>{{ 'آسف، هذا لـ ' + card.name + ' فقط! 💕' if card.language == 'ar' else 'Sorry, only ' + card.name + ' gets to see this! 💕' }}</h2>
+        <input type="password" id="passwordInput" placeholder="{{ 'أدخل كلمة المرور' if card.language == 'ar' else 'Enter password' }}" autocomplete="off">
+        <button class="btn" onclick="checkPassword()">{{ 'إرسال' if card.language == 'ar' else 'Submit' }}</button>
     </div>
 
     <div class="container" id="content">
-        <span class="click-hint">↓ انقر هنا! ↓</span> <!-- Changed to Arabic for consistency -->
-
         <div class="button-wrapper">
-            <button class="btn envelope-btn" onclick="showNote()">لك!</button>
+            <button class="btn envelope-btn" onclick="showNote()">{{ card.button_text }}</button>
             <span class="sparkle">✨</span>
             <span class="sparkle">✨</span>
+            <span class="click-hint">↓ Click Me! ↓</span>
         </div>
-        <h1>يا سلمان ❤️ 
+        <h1>{{ 'يا ' + card.name if card.language == 'ar' else 'My ' + card.name }} ❤️ 
             <span class="teddy">🧸</span>
             <span class="heart-spin">💞</span>
         </h1>
@@ -270,11 +276,11 @@
 
             state.attempts--;
             if (state.attempts > 0) {
-                alert(`كلمة مرور خاطئة! المحاولات المتبقية: ${state.attempts}`);
+                alert(`{{ 'كلمة مرور خاطئة! المحاولات المتبقية: ' if card.language == 'ar' else 'Wrong password! Attempts left: ' }}${state.attempts}`);
                 elements.passwordInput.value = '';
             } else {
                 document.body.innerHTML = `<h1 style="color: var(--pink-light); text-align: center; padding: 20px;">
-                    آسف، هذا لـ سلمان فقط! 💕
+                    {{ 'آسف، هذا لـ ' + card.name + ' فقط! 💕' if card.language == 'ar' else 'Sorry, only ' + card.name + ' gets to see this! 💕' }}
                 </h1>`;
             }
         }
