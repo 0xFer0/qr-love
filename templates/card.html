@@ -227,10 +227,9 @@
 
     <div class="container" id="content">
         <div class="button-wrapper">
-            <button class="btn envelope-btn" onclick="showNote()">{{ card.button_text }}</button>
+            <button class="btn envelope-btn" onclick="showNote()">{{ '↓ انقر هنا! ↓' if card.language == 'ar' else '↓ Click Me! ↓' }}</button>
             <span class="sparkle">✨</span>
             <span class="sparkle">✨</span>
-            <span class="click-hint">{{ '↓ انقر هنا! ↓' if card.language == 'ar' else '↓ Click Me! ↓' }}</span>
         </div>
         <h1>{{ 'يا ' + card.name if card.language == 'ar' else 'My ' + card.name }} ❤️ 
             <span class="teddy">🧸</span>
