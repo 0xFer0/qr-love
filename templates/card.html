@@ -101,14 +101,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
         }
 
         .button-wrapper {
             position: relative;
-            display: flex;
-            justify-content: center;
-            width: 100%;
+            display: inline-block;
+            text-align: center;
         }
 
         .envelope-btn {
@@ -117,7 +116,6 @@
             border: 2px solid var(--pink-light);
             padding: clamp(6px, 2vw, 12px) clamp(12px, 3vw, 20px);
             animation: pulse 1.5s infinite;
-            width: fit-content;
         }
 
         .envelope-btn:hover {
@@ -133,14 +131,12 @@
             color: #ffccde;
             animation: twinkle 1.5s infinite; 
         }
-        .sparkle:nth-child(1) { top: -5px; left: -10px; animation-delay: 0s; }
-        .sparkle:nth-child(2) { top: -5px; right: -10px; animation-delay: 0.5s; }
+        .sparkle:nth-child(1) { top: -5px; {{ 'right' if card.language == 'ar' else 'left' }}: -10px; animation-delay: 0s; }
+        .sparkle:nth-child(2) { top: -5px; {{ 'left' if card.language == 'ar' else 'right' }}: -10px; animation-delay: 0.5s; }
 
         .click-hint {
-            position: absolute;
-            bottom: -18px;
-            left: 50%;
-            transform: translateX(-50%);
+            display: block;
+            margin-top: 5px;
             font-size: clamp(12px, 3vw, 16px);
             color: var(--pink-light);
             font-family: 'Comic Neue', cursive;
@@ -199,14 +195,14 @@
             .password-container, .container { padding: 10px; }
             .note { width: 95%; max-width: 280px; }
             h1 { font-size: clamp(14px, 4.5vw, 28px); }
-            .click-hint { bottom: -16px; font-size: clamp(10px, 2.5vw, 14px); }
+            .click-hint { font-size: clamp(10px, 2.5vw, 14px); margin-top: 3px; }
         }
 
         @keyframes wave { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(15deg); } }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
         @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-        @keyframes bounce { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-5px); } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
         @keyframes burst { 
             0% { opacity: 1; transform: translate(0, 0) scale(1); } 
             100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(1.5); } 
@@ -234,7 +230,7 @@
             <button class="btn envelope-btn" onclick="showNote()">{{ card.button_text }}</button>
             <span class="sparkle">✨</span>
             <span class="sparkle">✨</span>
-            <span class="click-hint">↓ Click Me! ↓</span>
+            <span class="click-hint">{{ '↓ انقر هنا! ↓' if card.language == 'ar' else '↓ Click Me! ↓' }}</span>
         </div>
         <h1>{{ 'يا ' + card.name if card.language == 'ar' else 'My ' + card.name }} ❤️ 
             <span class="teddy">🧸</span>
