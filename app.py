@@ -7,17 +7,16 @@ from urllib.parse import urlparse
 import string
 
 app = Flask(__name__)
-
-# Database connection using Render's External Database URL
 def get_db_connection():
-    database_url = os.getenv('DATABASE_URL', 'postgresql://qr_love_user:JpLt6qxiagIxegNhAT0e4VJrAP5kmaBo@dpg-cvhndchopnds73flgp80-a.oregon-postgres.render.com/qr_love')
+    database_url = os.getenv('DATABASE_URL', 'postgresql://qr_love_zv93_user:kvXJCGfh5lcc2VVOAh7eRqGgQFggLCG5@dpg-cvhoei9opnds73flrhjg-a/qr_love_zv93')
     result = urlparse(database_url)
     conn = psycopg2.connect(
-        database=result.path[1:],  # 'qr_love'
-        user=result.username,      # 'qr_love_user'
-        password=result.password,  # 'JpLt6qxiagIxegNhAT0e4VJrAP5kmaBo'
-        host=result.hostname,      # 'dpg-cvhndchopnds73flgp80-a.oregon-postgres.render.com'
-        port=result.port           # 5432
+        database=result.path[1:],  # 'qr_love_zv93'
+        user=result.username,      # 'qr_love_zv93_user'
+        password=result.password,  # 'kvXJCGfh5lcc2VVOAh7eRqGgQFggLCG5'
+        host=result.hostname,      # 'dpg-cvhoei9opnds73flrhjg-a'
+        port=result.port,          # 5432
+        sslmode='require'          # Enforce SSL for Render
     )
     return conn
 
