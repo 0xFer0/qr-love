@@ -43,7 +43,7 @@
         }
 
         .password-container {
-            display: {{ 'none' if not card.password else 'flex' }};
+            display: flex;
             flex-direction: column;
             align-items: center;
             gap: 12px;
@@ -97,7 +97,6 @@
         }
 
         .container {
-            display: {{ 'block' if not card.password else 'none' }};
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -219,13 +218,19 @@
     </style>
 </head>
 <body>
-    <div class="password-container" id="passwordSection">
+    <div class="password-container" id="passwordSection" style="display: {{ 'none' if not card.password else 'flex' }};">
         <h2>{{ 'آسف، هذا لـ ' + card.name + ' فقط! 💕' if card.language == 'ar' else 'Sorry, only ' + card.name + ' gets to see this! 💕' }}</h2>
         <input type="password" id="passwordInput" placeholder="{{ 'أدخل كلمة المرور' if card.language == 'ar' else 'Enter password' }}" autocomplete="off">
         <button class="btn" onclick="checkPassword()">{{ 'إرسال' if card.language == 'ar' else 'Submit' }}</button>
     </div>
 
-    <div class="container" id="content">
+    <div class="container" id="content" style="display: {{ 'flex' if not card.password else 'none' }};">
+        {% if not card.password %}
+        <h1>{{ 'يا ' + card.name if card.language == 'ar' else 'My ' + card.name }} ❤️ 
+            <span class="teddy">🧸</span>
+            <span class="heart-spin">💞</span>
+        </h1>
+        {% else %}
         <div class="button-wrapper">
             <button class="btn envelope-btn" onclick="showNote()">{{ '↓ انقر هنا! ↓' if card.language == 'ar' else '↓ Click Me! ↓' }}</button>
             <span class="sparkle">✨</span>
@@ -235,6 +240,7 @@
             <span class="teddy">🧸</span>
             <span class="heart-spin">💞</span>
         </h1>
+        {% endif %}
     </div>
 
     <div class="note" id="note">
@@ -266,6 +272,7 @@
             if (input === state.correctPassword) {
                 elements.passwordSection.style.display = 'none';
                 elements.content.style.display = 'flex';
+                showNote(); // Show message immediately after correct password
                 return;
             }
 
@@ -281,14 +288,12 @@
         }
 
         function showNote() {
-            elements.note.classList.toggle('visible');
-            if (elements.note.classList.contains('visible')) {
-                createConfetti();
-            }
+            elements.note.classList.add('visible');
+            createConfetti();
         }
 
         function createConfetti() {
-            const btn = document.querySelector('.envelope-btn');
+            const btn = document.querySelector('.envelope-btn') || elements.content; // Fallback to container if no button
             const rect = btn.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
@@ -368,6 +373,11 @@
         elements.note.style.left = '50%';
         elements.note.style.top = '50%';
         elements.note.style.transform = 'translate(-50%, -50%)';
+
+        // Show note immediately if no password
+        if (!state.correctPassword) {
+            showNote();
+        }
     </script>
 </body>
 </html>
