@@ -199,7 +199,6 @@
 </head>
 <body>
     <div class="creator">
-        <h1>{{ '💕 عبّر عن مشاعرك ببطاقة فريدة' if language == 'ar' else '💕 Express Your Feelings with a Unique Card' }}</h1>
         <form id="cardForm">
             <label>{{ 'الاسم' if language == 'ar' else 'Name' }}</label>
             <input type="text" name="name" placeholder="{{ 'لمن هذه البطاقة؟' if language == 'ar' else 'Who is this for?' }}" required>
